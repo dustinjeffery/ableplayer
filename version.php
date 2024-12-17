@@ -24,6 +24,6 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2024121200;    // The current plugin version (Date: YYYYMMDDXX).
+$plugin->version   = 2024121602;    // The current plugin version (Date: YYYYMMDDXX).
 $plugin->requires  = 2021051705;    // Requires this Moodle version.
 $plugin->component = 'media_ableplayer';  // Full name of the plugin (used for diagnostics).

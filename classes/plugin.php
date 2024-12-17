@@ -26,6 +26,7 @@ defined('MOODLE_INTERNAL') || die();
 
 class media_ableplayer_plugin extends core_media_player_native {
     public function embed($urls, $name, $width, $height, $options) {
+        global $OUTPUT;
         $mediamanager = core_media_manager::instance();
 
         $sources = array();
@@ -85,15 +86,15 @@ class media_ableplayer_plugin extends core_media_player_native {
         // Otherwise we could end up with nested <video> tags. Fallback to link only.
         $fallback = self::LINKPLACEHOLDER;
 
-        return <<<OET
-<div class="mediaplugin mediaplugin_ableplayer">
-<video data-able-player data-skin="2020" playsinline $size preload="auto" title="$title">
-    $sources
-    $tracks
-    $fallback
-</video>
-</div>
-OET;
+        $templatecontext = [
+            'title' => $title,
+            'size' => $size,
+            'sources' => $sources,
+            'tracks' => $tracks,
+            'fallback' => $fallback
+        ];
+        
+        return $OUTPUT->render_from_template('media_ableplayer/player', $templatecontext);
     }
 
     public function get_supported_extensions() {
