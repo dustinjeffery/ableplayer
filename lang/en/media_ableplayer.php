@@ -27,3 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 $string['pluginname'] = 'Able Player';
 $string['pluginname_help'] = 'An accessible player for video and audio files.';
 $string['privacy:metadata'] = 'The Able Player media plugin does not store any personal data.';
+$string['audioextensions'] = 'Audio file extensions';
+$string['configaudioextensions'] = 'A comma-separated list of supported audio file extensions.';
+$string['videoextensions'] = 'Video file extensions';
+$string['configvideoextensions'] = 'A comma-separated list of supported video file extensions.';

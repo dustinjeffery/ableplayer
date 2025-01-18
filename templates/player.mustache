@@ -29,9 +29,52 @@
     }
 }}
 <div class="mediaplugin mediaplugin_ableplayer">
-<video data-able-player data-skin="2020" playsinline {{size}} preload="auto" title="{{title}}">
+<{{#isaudio}}audio{{/isaudio}}{{^isaudio}}video{{/isaudio}} data-able-player data-skin="2020" playsinline {{^isaudio}}{{size}}{{/isaudio}} preload="auto" title="{{title}}">
     {{{sources}}}
     {{{tracks}}}
     {{{fallback}}}
-</video>
+</{{#isaudio}}audio{{/isaudio}}{{^isaudio}}video{{/isaudio}}>
 </div>
+<p>Here are the sources</p>
+<table class="table table-bordered">
+    <tr>
+        <th scope="row">Media type:</th>
+        <td>{{#isaudio}}Audio{{/isaudio}}{{^isaudio}}Video{{/isaudio}}</td>
+    </tr>
+    <tr>
+        <th scope="row">Has poster?:</th>
+        <td>{{#hasposter}}Yes{{/hasposter}}{{^hasposter}}No{{/hasposter}}</td>
+    </tr>
+    <tr>
+        <th scope="row">Original text:</th>
+        <td>{{text}}</td>
+    </tr>
+        <tr>
+        <th scope="row">Title:</th>
+        <td>{{title}}</td>
+    </tr>
+    <tr>
+        <th scope="row">Size:</th>
+        <td>{{size}}</td>
+    </tr>
+{{#arrsources}}
+    <tr>
+        <th scope="row">Source URL:</th>
+        <td>{{src}}</td>
+    </tr>
+    <tr>
+        <th scope="row">Source Type:</th>
+        <td>{{type}}</td>
+    </tr>
+{{/arrsources}}
+{{#arrtracks}}
+    <tr>
+        <th scope="row">Track:</th>
+        <td>{{.}}</td>
+    </tr>
+{{/arrtracks}}
+    <tr>
+        <th scope="row">Fallback:</th>
+        <td>{{{fallback}}}</td>
+    </tr>
+</table>

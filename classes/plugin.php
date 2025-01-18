@@ -25,11 +25,15 @@
 defined('MOODLE_INTERNAL') || die();
 
 class media_ableplayer_plugin extends core_media_player_native {
+    /** @var array caches supported extensions */
+    protected $extensions = null;
+
     public function embed($urls, $name, $width, $height, $options) {
         global $OUTPUT;
         $mediamanager = core_media_manager::instance();
 
         $sources = array();
+        $arrsources = array();
         $tracks = array();
         $text = null;
         $isaudio = null;
@@ -48,6 +52,7 @@ class media_ableplayer_plugin extends core_media_player_native {
                     $tracks[] = $track;
                 }
             }
+            $arrtracks = $tracks;
             $tracks = implode("\n", $tracks);
             $hasposter = self::get_attribute($text, 'poster') !== null;
         }
@@ -59,13 +64,22 @@ class media_ableplayer_plugin extends core_media_player_native {
                 // Set mimetype of quicktime videos to mp4 for Chrome/Edge browsers .
                 $mimetype = 'video/mp4';
             }
+
             $source = html_writer::empty_tag('source', array('src' => $url, 'type' => $mimetype));
+            // create array, bypassing html_writer
+            $arrsource = [
+                'src' => $url,
+                'type' => $mimetype
+            ];
             if ($mimetype === 'video/mp4') {
                 // Better add m4v as first source, it might be a bit more
                 // compatible with problematic browsers
                 array_unshift($sources, $source);
+                // array, bypassing html_writer
+                array_unshift($arrsources, $arrsource);
             } else {
                 $sources[] = $source;
+                $arrsources[] = $arrsource;
             }
         }
 
@@ -87,10 +101,16 @@ class media_ableplayer_plugin extends core_media_player_native {
         $fallback = self::LINKPLACEHOLDER;
 
         $templatecontext = [
+            'text' => $text,
+            'isaudio' => $isaudio,
+            'hasposter' => $hasposter,
+            'hastracks' => $hastracks,
             'title' => $title,
             'size' => $size,
             'sources' => $sources,
+            'arrsources' => $arrsources,
             'tracks' => $tracks,
+            'arrtracks' => $arrtracks,
             'fallback' => $fallback
         ];
         
@@ -100,7 +120,21 @@ class media_ableplayer_plugin extends core_media_player_native {
     public function get_supported_extensions() {
         global $CFG;
         require_once($CFG->libdir . '/filelib.php');
-        return file_get_typegroup('extension', 'html_video');
+        if ($this->extensions === null) {
+            // Get extensions set by user in UI config.
+            $filetypes = preg_split('/\s*,\s*/',
+                strtolower(trim(get_config('media_ableplayer', 'videoextensions') . ',' .
+                get_config('media_ableplayer', 'audioextensions'))));
+
+            $this->extensions = file_get_typegroup('extension', $filetypes);
+            if ($this->extensions) {
+                // Get extensions supported by player.
+                $supportedextensions = array_merge(file_get_typegroup('extension', 'html_video'),
+                    file_get_typegroup('extension', 'html_audio'), file_get_typegroup('extension', 'media_source'));
+                $this->extensions = array_intersect($this->extensions, $supportedextensions);
+            }
+        }
+        return $this->extensions;
     }
 
     public function list_supported_urls(array $urls, array $options = array()) {
